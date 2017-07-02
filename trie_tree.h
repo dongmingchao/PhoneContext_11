@@ -21,48 +21,74 @@ private:
 
 protected:
 	struct tnode {
-		char *c;
+		char c;
 		list<tnode*> value;
 	};
-	tnode *root;
 public:
+	tnode *root;
 	trie() {
 		root = new tnode;
-		root->c = NULL;
+		root->c = '#';
 	}
 	~trie() {
 
 	}
 	trie operator <<(char *in) {
 		tnode *p = new tnode;
-		p->c = in;
-		list<tnode*> table = root->value;
-		while (table.head) {
-			if (*table.head->e->c == *in) {
+		list<tnode*> *table = &(root->value);
+		list<tnode*>::node *head = table->head;
+		while (head) {
+			//cout << *(head->e->c);
+			if (head->e->c == *in) {
 				in++;
-				if (in == '\0') {
+				if (*in == '\0') {
 					cout << "find!";
 					return *this;
 				} else {
-					table = table.head->e->value;
+					table = &(head->e->value);
+					head = table->head;
 					continue;
 				}
 			}
-			table.head = table.head->next;
+			//else
+			head = head->next;
 		}
-		table << p;
+		p->c = *in;
+		*table << p;
 		return *this;
 	}
-	list<tnode*> levelqueue() {
-		list<tnode*> level;
-		level = root->value;
-		list<tnode*> *table = &level;
-		while (table->head) {
-			*table << table->head->e;
-			table->head = table->head->next;
-		}
-		return level;
+	list<char> tree_level() { //层次遍历
+		list<char> result;
+		if (!root)
+			return result;
+		list<tnode*> table = root->value;
+		list<tnode*> l;
+		//先进入队列
+		for (; table.head; table.head = table.head->next)
+			l << table.head->e;
+		do {
+			//一个出队列
+			result << l.head->e->c;
+			//cout<<l.head->e->c<<'\t';
+			table = l.head->e->value;
+			//出队列的子树入队列
+			if (table.head) {
+				tnode *blank = new tnode;
+				blank->c = '\n';
+				l << blank;
+			}
+			for (; table.head; table.head = table.head->next)
+				l << table.head->e;
+			//判断队列是不是全部出完
+			if (l.head->next) {
+				l.head = l.head->next;
+				table = l.head->e->value;
+			} else
+				return result;
+		} while (l.head);
+		return result;
 	}
+
 };
 
 #endif /* TRIE_TREE_H_ */

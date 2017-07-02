@@ -12,19 +12,20 @@ using std::cout;
 template<class T>
 class list {
 protected:
+
+public:
 	struct node {
 		T e;
 		node *next;
 		node *front;
 	};
-public:
 	node *head;
 	node *tail;
 	list() {
 		head = NULL;
 		tail = NULL;
 	}
-	list operator <<(T in) {
+	list operator <<(T in) { //TODO:队列 << 2 << 3 << 4;此时tail指向2
 		node *p = new node;
 		p->e = in;
 		p->next = NULL;
@@ -57,7 +58,6 @@ public:
 		for (node *i = head; i; i = i->next)
 			cout << i->e;
 	}
-
 	void findtail() {
 		node *i = head;
 		for (; i->next; i = i->next)
