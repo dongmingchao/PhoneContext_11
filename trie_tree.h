@@ -25,7 +25,8 @@ protected:
 public:
 	struct tnode {
 		char c;
-		char *phone;
+		list<char> phone;
+		list<char> name;
 		int linelevel;
 		tnode *parent;
 		list<tnode*> value;
@@ -42,16 +43,23 @@ public:
 	~trie() {
 
 	}
-	trie push(char *in, char *phone) {
+	trie push(list<char> in, list<char> phone) {
+		list<char> name = in;
+		if (!in.head)
+			return *this;
 		tnode *par = root;
 		list<tnode*> *table = &(par->value);
 		list<tnode*>::node *head = table->head;
 		while (head) {
-			if (head->e->c == *in) {
-				in++;
-				if (*in == '\0') {
-					cout << "find!";
-					return *this;
+			if (head->e->c == in.head->e) {
+				in.head = in.head->next;
+				if (!in.head) {
+					cout << "您可能要找:" << endl; //废弃不用
+					//if()
+					trie tree_target;
+					tree_target.root->value = *new list<tnode*>;
+					tree_target.root->value << head->e;
+					return tree_target;
 				} else {
 					head->e->parent = par;
 					par = head->e;
@@ -65,19 +73,19 @@ public:
 		}
 		//叶子节点配置
 		//不止一个新节点的加入
-		while (*in != '\0') {
+		while (in.head) {
 			tnode *p = new tnode;
-			p->c = *in;
-			if (in[1] == '\0')
+			p->c = in.head->e;
+			if (!in.head->next) {
+				p->name = name;
 				p->phone = phone;
-			else
-				p->phone = NULL;
+			}
 			p->parent = par;
 			p->linelevel = par->linelevel + 1;
 			*table << p;
 			par = p;
 			table = &(par->value);
-			in++;
+			in.head = in.head->next;
 			if (p->linelevel > depth)
 				depth = p->linelevel;
 		}
@@ -85,7 +93,7 @@ public:
 	}
 	list<tnode*> tree_level() { //层次遍历
 		list<tnode*> l;
-		if (!root)
+		if (!root->value.head)
 			return l;
 		list<tnode*> table = root->value;
 		//先进入队列

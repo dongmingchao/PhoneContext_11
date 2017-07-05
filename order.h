@@ -16,12 +16,18 @@ int check(list<char> order) {
 	list<char> _build;
 	list<char> _tree;
 	list<char> _import;
+	list<char> _search;
+	list<char> _delete;
+	list<char> _save;
 	_exit << 'e' << 'x' << 'i' << 't';
 	_readfile << 'r' << 'e' << 'a' << 'd' << 'f' << 'i' << 'l' << 'e';
 	_help << 'h' << 'e' << 'l' << 'p';
 	_build << 'b' << 'u' << 'i' << 'l' << 'd';
 	_tree << 't' << 'r' << 'e' << 'e';
 	_import << 'i' << 'm' << 'p' << 'o' << 'r' << 't';
+	_search << 's' << 'e' << 'a' << 'r' << 'c' << 'h';
+	_delete << 'd' << 'e' << 'l' << 'e' << 't' << 'e';
+	_save << 's' << 'a' << 'v' << 'e';
 	if (order == _exit)
 		return 1;
 	if (order == _readfile)
@@ -34,57 +40,36 @@ int check(list<char> order) {
 		return 5;
 	if (order == _import)
 		return 6;
+	if (order == _search)
+		return 7;
+	if (order == _delete)
+		return 8;
+	if (order == _save)
+		return 9;
 	return 0;
 }
-list<char*> importfile(char *filename) {
+list<list<char>> importfile(char *filename) {
 	FILE *f;
-	list<char*> result;
+	list<list<char>> result;
 	if (!(f = fopen(filename, "rb")))
 		cout << "文件读取错误" << endl;
 	else {
+		list<char> str;
 		while (!feof(f)) {
-			char *p = new char;
-			fgets(p, 1024, f);
-			char *temp = new char;
-			for (int i = 0; i < 1024; i++) {
-				if (p[i] != '\r') {
-					temp[i] = p[i];
-					temp[i] = *new char;
-				} else {
-					temp[i] = '\0';
-					result << temp;
-					break;
-				}
+			char point;
+			fscanf(f, "%c", &point);
+			if (point == '\r' || point == '\0')
+				continue;
+			if (point != '\n') {
+				str << point;
+			} else {
+				result << str;
+				str.head = NULL;
+				str.tail = NULL;
+				continue;
 			}
-			//printf("line::%s", p);
-			//result << strtok(p, "\r");
 		}
 		fclose(f);
-	}
-	return result;
-}
-list<char*> merge(list<char> orgin) { //合并字符成串并去除\r\n
-	list<char*> result;
-	char *word;
-	int i = 0;
-	while (orgin.head) {
-		if (orgin.head->e != '\r') {
-			if (orgin.head->e == '\n') {
-				word += i;
-				word = new char;
-				word[i] = '\0';
-				printf("%s", word);
-				result << word;
-				i = 0;
-				word = new char;
-			} else {
-				word += i;
-				word = new char;
-				word[i] = orgin.head->e;
-			}
-			i++;
-		}
-		orgin.head = orgin.head->next;
 	}
 	return result;
 }

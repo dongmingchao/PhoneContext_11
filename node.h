@@ -45,9 +45,16 @@ public:
 		out = head->e;
 		node *p = head;
 		head = head->next;
-		head->front = NULL;
+		if (head)
+			head->front = NULL;
 		delete (p);
 		return *this;
+	}
+	void queue_pop() {
+		node *p = head;
+		head = head->next;
+		head->front = NULL;
+		delete (p);
 	}
 	T pop() {
 		node *temp = tail;
@@ -91,8 +98,8 @@ public:
 			cout << "文件读取错误" << endl;
 		else {
 			while (!feof(f)) {
-				node *p = new node;
-				fread(p, sizeof(node), 1, f);
+				T p;
+				fread(&p, sizeof(T), 1, f);
 				*this << p;
 			}
 			fclose(f);
@@ -110,6 +117,19 @@ public:
 		if (order)
 			return 0;
 		return 1;
+	}
+	list<T> split(T key) {
+		list<T> fresh;
+		if (!head)
+			return fresh;
+		while (head->e != key) {
+			T temp;
+			*this >> temp;
+			fresh << temp;
+			if (!head)
+				break;
+		}
+		return fresh;
 	}
 	~list() {
 
